@@ -282,6 +282,7 @@ syscall_test(
     size = "medium",
     add_overlay = False,  # TODO(gvisor.dev/issue/317): enable when fixed.
     test = "//test/syscalls/linux:inotify_test",
+    vfs2 = "True",
 )
 
 syscall_test(
@@ -349,6 +350,7 @@ syscall_test(
 syscall_test(
     add_overlay = True,
     test = "//test/syscalls/linux:mknod_test",
+    vfs2 = "True",
 )
 
 syscall_test(
