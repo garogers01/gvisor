@@ -323,6 +323,9 @@ func (s *Sleeper) enqueueAssertedWaker(w *Waker) {
 //
 // This struct is thread-safe, that is, its methods can be called concurrently
 // by multiple goroutines.
+//
+// Note, it is not safe to copy a Waker as its fields are modified by value
+// (the pointer fields are individually modified with atomic operations).
 type Waker struct {
 	// s is the sleeper that this waker can wake up. Only one sleeper at a
 	// time is allowed. This field can have three classes of values:
@@ -390,6 +393,22 @@ func (w *Waker) Clear() bool {
 func (w *Waker) IsAsserted() bool {
 	return (*Sleeper)(atomic.LoadPointer(&w.s)) == &assertedSleeper
 }
+
+// Lock is a no-op used by the copylocks checker from go vet.
+//
+// See Waker for details about why it shouldn't be copied.
+//
+// See https://github.com/golang/go/issues/8005#issuecomment-190753527 for more
+// details about the copylocks checker.
+func (*Waker) Lock() {}
+
+// Unlock is a no-op used by the copylocks checker from go vet.
+//
+// See Waker for details about why it shouldn't be copied.
+//
+// See https://github.com/golang/go/issues/8005#issuecomment-190753527 for more
+// details about the copylocks checker.
+func (*Waker) Unlock() {}
 
 func usleeper(s *Sleeper) unsafe.Pointer {
 	return unsafe.Pointer(s)
